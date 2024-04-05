@@ -1,0 +1,32 @@
+// Milady Address
+const ADDRESS = 0x5Af0D9827E0c53E4799BB226655A1de152A425a5;
+
+mfn map_events(BLOCK) {
+    #{
+        transfers: erc721::Transfer(BLOCK, [global::ADDRESS]),
+        approvals: erc721::Approval(BLOCK, [global::ADDRESS]),
+        block_num: BLOCK.number,
+    }
+}
+
+mfn graph_out(map_events) {
+    let block_num = map_events.block_num;
+
+    map_events?.transfers?.map(|transfer| {
+        let id = `${transfer?.from}-${transfer?.to}-${block_num}`;
+        new Transfer id {
+            from: transfer.from as String!
+            to: transfer.from as String!
+        }
+    })
+
+    +
+
+    map_events?.approvals?.map(|approval| {
+        let id = `${approval.owner}-${approval.approved}-${block_num}`;
+        new Approval id {
+            owner: approval.owner as String!
+            approved: approval.approved as String!
+        }
+    })
+}
